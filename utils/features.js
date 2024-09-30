@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 const connectDb = (uri) => {
   mongoose
@@ -11,5 +12,18 @@ const connectDb = (uri) => {
     });
 };
 
+const sendToken = (res, user, code, message) => {
+  const token = jwt.sign(
+    { _id: user._id, email: user.email },
+    process.env.JWT_SECRET
+  );
 
-export {connectDb}
+  return res.status(code).json({
+    success: true,
+    message,
+    user,
+    token,
+  });
+};
+
+export { connectDb, sendToken };
