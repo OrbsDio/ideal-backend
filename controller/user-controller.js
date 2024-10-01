@@ -7,13 +7,24 @@ const register = async (req, res, next) => {
   try {
     const { name, email, phone, password } = req.body;
 
+    const file = req.file;
+
+    if (!file) {
+      return next(new ErrorHandler("Please upload an avatar", 400));
+    }
+    if (!file) return next(new ErrorHandler("Please upload avatar"));
+
+    const avatar = {
+      url: `/uploads/avatars/${file.filename}`, // Store local file path
+    };
+
     const userExists = await User.findOne({ email });
     if (userExists)
       if (userExists) {
         return next(new ErrorHandler("User already exists", 500));
       }
 
-    const user = await User.create({ name, email, phone, password });
+    const user = await User.create({ name, email, phone, password,avatar:avatar.url });
 
     res.status(201).json({
       success: true,
