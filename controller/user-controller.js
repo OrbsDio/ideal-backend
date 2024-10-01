@@ -29,8 +29,6 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    console.log(email, password);
-
     const userExists = await User.findOne({ email }).select("+password");
 
     if (!userExists) {
@@ -47,4 +45,18 @@ const login = async (req, res, next) => {
   }
 };
 
-export { register, login };
+const getMyProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { register, login, getMyProfile };
